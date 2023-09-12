@@ -1,27 +1,23 @@
 import { showAccountsNames } from "./account.service";
+import MockRepository from "../account.repository";
 
-let mockListAccounts = jest.fn()
-jest.mock("../account.repository", () => {
-    return {
-        AccountRepository: {
-            listAccounts: mockListAccounts
-        }
-    }
-});
-
+jest.mock("../account.repository", () => ({
+    listAccounts: jest.fn(() => ["one", "two", "three"])
+}));
+const mockRepo = jest.mocked(MockRepository)
 
 describe("showAccountsNames", () => {
     beforeEach(() => {
-        mockListAccounts.mockReturnValue(["one", "two", "three"])
+        mockRepo.listAccounts.mockReturnValue(["one", "two", "three"])
     })
 
     it("show account names", () => {
         const accountNames = showAccountsNames()
-        expect(mockListAccounts).toHaveBeenCalledTimes(1)
+        expect(mockRepo.listAccounts).toHaveBeenCalledTimes(1)
         expect(accountNames).toBe("one,two,three")
     });
 
     beforeEach(() => {
-        mockListAccounts.mockClear()
+        mockRepo.listAccounts.mockClear()
     })
 })
